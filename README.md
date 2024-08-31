@@ -31,7 +31,7 @@ module "ecs_iam" {
 | <a name="input_execution_role_name"></a> [execution\_role\_name](#input\_execution\_role\_name) | ECS 'Task Execution Role' name | `string` | `null` | no |
 | <a name="input_instance_profile_name"></a> [instance\_profile\_name](#input\_instance\_profile\_name) | ECS container instance profile name | `string` | `null` | no |
 | <a name="input_instance_role_name"></a> [instance\_role\_name](#input\_instance\_role\_name) | ECS container instance role name | `string` | `null` | no |
-| <a name="input_task_managed_policies"></a> [task\_managed\_policies](#input\_task\_managed\_policies) | n/a | `list(string)` | `[]` | no |
+| <a name="input_task_managed_policies"></a> [task\_managed\_policies](#input\_task\_managed\_policies) | Managed Policies to attach to the task role | `list(string)` | `[]` | no |
 | <a name="input_task_role_name"></a> [task\_role\_name](#input\_task\_role\_name) | ECS 'Task Role' name | `string` | `null` | no |
 
 ## Modules
@@ -42,8 +42,8 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_instance_profile"></a> [instance\_profile](#output\_instance\_profile) | n/a |
-| <a name="output_role"></a> [role](#output\_role) | n/a |
+| <a name="output_instance_profile"></a> [instance\_profile](#output\_instance\_profile) | Instance Profile for ECS |
+| <a name="output_role"></a> [role](#output\_role) | IAM roles for ECS |
 
 ## Providers
 

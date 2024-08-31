@@ -23,6 +23,7 @@ variable "instance_profile_name" {
 }
 
 variable "task_managed_policies" {
-  type = list(string)
-  default = []
+  type        = list(string)
+  description = "Managed Policies to attach to the task role"
+  default     = []
 }
