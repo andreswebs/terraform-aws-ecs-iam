@@ -12,13 +12,6 @@ data "aws_iam_policy_document" "tasks_trust" {
   }
 }
 
-/**
-* ECS 'Task Execution Role' and permissions
-*/
-resource "aws_iam_role" "execution" {
-  name               = var.execution_role_name
-  assume_role_policy = data.aws_iam_policy_document.tasks_trust.json
-}
 
 data "aws_iam_policy_document" "ssm_messages" {
   statement {
@@ -33,16 +26,12 @@ data "aws_iam_policy_document" "ssm_messages" {
   }
 }
 
-data "aws_iam_policy_document" "execution_permissions" {
-  source_policy_documents = [
-    data.aws_iam_policy_document.ssm_messages.json,
-  ]
-}
-
-resource "aws_iam_role_policy" "execution_permissions" {
-  name   = "execution-permissions"
-  role   = aws_iam_role.execution.name
-  policy = data.aws_iam_policy_document.execution_permissions.json
+/**
+* ECS 'Task Execution Role' and permissions
+*/
+resource "aws_iam_role" "execution" {
+  name               = var.execution_role_name
+  assume_role_policy = data.aws_iam_policy_document.tasks_trust.json
 }
 
 resource "aws_iam_role_policy_attachment" "execution_role" {
@@ -57,6 +46,19 @@ resource "aws_iam_role" "task" {
   name               = var.task_role_name
   assume_role_policy = data.aws_iam_policy_document.tasks_trust.json
 }
+
+data "aws_iam_policy_document" "task_permissions" {
+  source_policy_documents = [
+    data.aws_iam_policy_document.ssm_messages.json,
+  ]
+}
+
+resource "aws_iam_role_policy" "task_permissions" {
+  name   = "task-permissions"
+  role   = aws_iam_role.execution.name
+  policy = data.aws_iam_policy_document.task_permissions.json
+}
+
 
 resource "aws_iam_role_policy_attachment" "task" {
   for_each   = toset(var.task_managed_policies)
@@ -103,4 +105,3 @@ resource "aws_iam_role_policy_attachment" "instance" {
   role       = aws_iam_role.instance.name
   policy_arn = each.value
 }
-
