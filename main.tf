@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "task_permissions" {
 
 resource "aws_iam_role_policy" "task_permissions" {
   name   = "task-permissions"
-  role   = aws_iam_role.execution.name
+  role   = aws_iam_role.task.name
   policy = data.aws_iam_policy_document.task_permissions.json
 }
 
