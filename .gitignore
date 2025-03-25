@@ -14,4 +14,4 @@ terraform.tf
 
 *.diff
 *.bak
-*.kubeconfig*
+*.bak.*

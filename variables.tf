@@ -27,3 +27,15 @@ variable "task_managed_policies" {
   description = "Managed Policies to attach to the task role"
   default     = []
 }
+
+variable "enable_instance_iam" {
+  type        = bool
+  description = "(Optional) Enable instance IAM?"
+  default     = false
+}
+
+variable "task_additional_trust_policy_documents" {
+  type        = list(string)
+  description = "List of additional trust policy documents to be merged with the base ecs-tasks trust policy"
+  default     = []
+}

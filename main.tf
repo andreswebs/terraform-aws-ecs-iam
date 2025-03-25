@@ -1,17 +1,24 @@
+data "aws_partition" "current" {}
+
+locals {
+  partition  = data.aws_partition.current.partition
+  dns_suffix = data.aws_partition.current.dns_suffix
+
+  managed_policy_arn_prefix = "arn:${local.partition}:iam::aws:policy"
+}
 
 /**
-* Trust policy used by both the ECS 'Task Execution Role' and 'Task Role'
+* Base trust policy used by both the ECS 'Task Execution Role' and 'Task Role'
 */
-data "aws_iam_policy_document" "tasks_trust" {
+data "aws_iam_policy_document" "ecs_tasks_trust" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
+      identifiers = ["ecs-tasks.${local.dns_suffix}"]
     }
   }
 }
-
 
 data "aws_iam_policy_document" "ssm_messages" {
   statement {
@@ -31,20 +38,27 @@ data "aws_iam_policy_document" "ssm_messages" {
 */
 resource "aws_iam_role" "execution" {
   name               = var.execution_role_name
-  assume_role_policy = data.aws_iam_policy_document.tasks_trust.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_tasks_trust.json
 }
 
 resource "aws_iam_role_policy_attachment" "execution_role" {
   role       = aws_iam_role.execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  policy_arn = "${local.managed_policy_arn_prefix}/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 /**
 * ECS 'Task Role'
 */
+data "aws_iam_policy_document" "task_trust" {
+  source_policy_documents = compact(concat(
+    [data.aws_iam_policy_document.ecs_tasks_trust.json],
+    var.task_additional_trust_policy_documents
+  ))
+}
+
 resource "aws_iam_role" "task" {
   name               = var.task_role_name
-  assume_role_policy = data.aws_iam_policy_document.tasks_trust.json
+  assume_role_policy = data.aws_iam_policy_document.task_trust.json
 }
 
 data "aws_iam_policy_document" "task_permissions" {
@@ -70,38 +84,42 @@ resource "aws_iam_role_policy_attachment" "task" {
 * ECS container instance role and permissions
 */
 data "aws_iam_policy_document" "ec2_trust" {
+  count = var.enable_instance_iam ? 1 : 0
+
   statement {
     actions = ["sts:AssumeRole"]
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
+      identifiers = ["ec2.${local.dns_suffix}"]
     }
   }
 }
 
 resource "aws_iam_role" "instance" {
+  count              = var.enable_instance_iam ? 1 : 0
   name               = var.instance_role_name
-  assume_role_policy = data.aws_iam_policy_document.ec2_trust.json
+  assume_role_policy = data.aws_iam_policy_document.ec2_trust[0].json
 }
 
 resource "aws_iam_instance_profile" "this" {
-  name = var.instance_profile_name
-  role = aws_iam_role.instance.name
+  count = var.enable_instance_iam ? 1 : 0
+  name  = var.instance_profile_name
+  role  = aws_iam_role.instance[0].name
 }
 
 locals {
 
   instance_managed_policies = [
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
-    "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+    "${local.managed_policy_arn_prefix}/AmazonSSMManagedInstanceCore",
+    "${local.managed_policy_arn_prefix}/CloudWatchAgentServerPolicy",
+    "${local.managed_policy_arn_prefix}/service-role/AmazonEC2ContainerServiceforEC2Role"
   ]
 
 }
 
 resource "aws_iam_role_policy_attachment" "instance" {
-  for_each   = toset(local.instance_managed_policies)
-  role       = aws_iam_role.instance.name
+  for_each   = var.enable_instance_iam ? toset(local.instance_managed_policies) : []
+  role       = aws_iam_role.instance[0].name
   policy_arn = each.value
 }
