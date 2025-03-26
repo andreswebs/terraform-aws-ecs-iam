@@ -41,7 +41,7 @@ resource "aws_iam_role" "execution" {
   assume_role_policy    = data.aws_iam_policy_document.ecs_tasks_trust.json
   force_detach_policies = true
   description           = var.execution_role_description
-  tags                  = var.tags
+  tags                  = merge(var.tags, var.execution_role_tags)
 }
 
 resource "aws_iam_role_policy_attachment" "execution_role" {
@@ -64,7 +64,7 @@ resource "aws_iam_role" "task" {
   assume_role_policy    = data.aws_iam_policy_document.task_trust.json
   force_detach_policies = true
   description           = var.task_role_description
-  tags                  = var.tags
+  tags                  = merge(var.tags, var.task_role_tags)
 }
 
 data "aws_iam_policy_document" "task_permissions" {
@@ -108,7 +108,7 @@ resource "aws_iam_role" "instance" {
   assume_role_policy    = data.aws_iam_policy_document.ec2_trust[0].json
   force_detach_policies = true
   description           = var.instance_role_description
-  tags                  = var.tags
+  tags                  = merge(var.tags, var.instance_role_tags)
 }
 
 resource "aws_iam_instance_profile" "this" {

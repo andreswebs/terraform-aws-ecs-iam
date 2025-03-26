@@ -3,10 +3,17 @@ variable "task_role_name" {
   description = "ECS 'Task Role' name"
   default     = null
 }
+
 variable "task_role_description" {
   type        = string
   description = "ECS 'Task Role' description"
   default     = null
+}
+
+variable "task_role_tags" {
+  type        = map(string)
+  description = "Tags applied to the ECS 'Task Role'"
+  default     = {}
 }
 
 variable "execution_role_name" {
@@ -21,6 +28,12 @@ variable "execution_role_description" {
   default     = null
 }
 
+variable "execution_role_tags" {
+  type        = map(string)
+  description = "Tags applied to the ECS 'Task Execution Role'"
+  default     = {}
+}
+
 variable "instance_role_name" {
   type        = string
   description = "ECS container instance role name"
@@ -31,6 +44,12 @@ variable "instance_role_description" {
   type        = string
   description = "ECS container instance role description"
   default     = null
+}
+
+variable "instance_role_tags" {
+  type        = map(string)
+  description = "Tags applied to the ECS container instance role"
+  default     = {}
 }
 
 variable "instance_profile_name" {

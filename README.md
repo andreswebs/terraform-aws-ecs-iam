@@ -31,15 +31,18 @@ module "ecs_iam" {
 | <a name="input_enable_instance_iam"></a> [enable\_instance\_iam](#input\_enable\_instance\_iam) | (Optional) Enable instance IAM? | `bool` | `false` | no |
 | <a name="input_execution_role_description"></a> [execution\_role\_description](#input\_execution\_role\_description) | ECS 'Task Execution Role' description | `string` | `null` | no |
 | <a name="input_execution_role_name"></a> [execution\_role\_name](#input\_execution\_role\_name) | ECS 'Task Execution Role' name | `string` | `null` | no |
+| <a name="input_execution_role_tags"></a> [execution\_role\_tags](#input\_execution\_role\_tags) | Tags applied to the ECS 'Task Execution Role' | `map(string)` | `{}` | no |
 | <a name="input_instance_profile_name"></a> [instance\_profile\_name](#input\_instance\_profile\_name) | ECS container instance profile name | `string` | `null` | no |
 | <a name="input_instance_role_description"></a> [instance\_role\_description](#input\_instance\_role\_description) | ECS container instance role description | `string` | `null` | no |
 | <a name="input_instance_role_name"></a> [instance\_role\_name](#input\_instance\_role\_name) | ECS container instance role name | `string` | `null` | no |
+| <a name="input_instance_role_tags"></a> [instance\_role\_tags](#input\_instance\_role\_tags) | Tags applied to the ECS container instance role | `map(string)` | `{}` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags applied to all the created resources | `map(string)` | `{}` | no |
 | <a name="input_task_additional_policy_documents"></a> [task\_additional\_policy\_documents](#input\_task\_additional\_policy\_documents) | List of additional policy documents to be merged with the task role permissions | `list(string)` | `[]` | no |
 | <a name="input_task_additional_trust_policy_documents"></a> [task\_additional\_trust\_policy\_documents](#input\_task\_additional\_trust\_policy\_documents) | List of additional trust policy documents to be merged with the base ecs-tasks trust policy | `list(string)` | `[]` | no |
 | <a name="input_task_managed_policies"></a> [task\_managed\_policies](#input\_task\_managed\_policies) | Managed Policies to attach to the task role | `list(string)` | `[]` | no |
 | <a name="input_task_role_description"></a> [task\_role\_description](#input\_task\_role\_description) | ECS 'Task Role' description | `string` | `null` | no |
 | <a name="input_task_role_name"></a> [task\_role\_name](#input\_task\_role\_name) | ECS 'Task Role' name | `string` | `null` | no |
+| <a name="input_task_role_tags"></a> [task\_role\_tags](#input\_task\_role\_tags) | Tags applied to the ECS 'Task Role' | `map(string)` | `{}` | no |
 
 ## Modules
 
