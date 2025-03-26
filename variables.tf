@@ -3,6 +3,11 @@ variable "task_role_name" {
   description = "ECS 'Task Role' name"
   default     = null
 }
+variable "task_role_description" {
+  type        = string
+  description = "ECS 'Task Role' description"
+  default     = null
+}
 
 variable "execution_role_name" {
   type        = string
@@ -10,9 +15,21 @@ variable "execution_role_name" {
   default     = null
 }
 
+variable "execution_role_description" {
+  type        = string
+  description = "ECS 'Task Execution Role' description"
+  default     = null
+}
+
 variable "instance_role_name" {
   type        = string
   description = "ECS container instance role name"
+  default     = null
+}
+
+variable "instance_role_description" {
+  type        = string
+  description = "ECS container instance role description"
   default     = null
 }
 
@@ -38,4 +55,16 @@ variable "task_additional_trust_policy_documents" {
   type        = list(string)
   description = "List of additional trust policy documents to be merged with the base ecs-tasks trust policy"
   default     = []
+}
+
+variable "task_additional_policy_documents" {
+  type        = list(string)
+  description = "List of additional policy documents to be merged with the task role permissions"
+  default     = []
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags applied to all the created resources"
+  default     = {}
 }

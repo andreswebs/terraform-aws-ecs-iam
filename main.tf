@@ -37,8 +37,11 @@ data "aws_iam_policy_document" "ssm_messages" {
 * ECS 'Task Execution Role' and permissions
 */
 resource "aws_iam_role" "execution" {
-  name               = var.execution_role_name
-  assume_role_policy = data.aws_iam_policy_document.ecs_tasks_trust.json
+  name                  = var.execution_role_name
+  assume_role_policy    = data.aws_iam_policy_document.ecs_tasks_trust.json
+  force_detach_policies = true
+  description           = var.execution_role_description
+  tags                  = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "execution_role" {
@@ -57,14 +60,18 @@ data "aws_iam_policy_document" "task_trust" {
 }
 
 resource "aws_iam_role" "task" {
-  name               = var.task_role_name
-  assume_role_policy = data.aws_iam_policy_document.task_trust.json
+  name                  = var.task_role_name
+  assume_role_policy    = data.aws_iam_policy_document.task_trust.json
+  force_detach_policies = true
+  description           = var.task_role_description
+  tags                  = var.tags
 }
 
 data "aws_iam_policy_document" "task_permissions" {
-  source_policy_documents = [
-    data.aws_iam_policy_document.ssm_messages.json,
-  ]
+  source_policy_documents = compact(concat(
+    [data.aws_iam_policy_document.ssm_messages.json],
+    var.task_additional_policy_documents
+  ))
 }
 
 resource "aws_iam_role_policy" "task_permissions" {
@@ -72,7 +79,6 @@ resource "aws_iam_role_policy" "task_permissions" {
   role   = aws_iam_role.task.name
   policy = data.aws_iam_policy_document.task_permissions.json
 }
-
 
 resource "aws_iam_role_policy_attachment" "task" {
   for_each   = toset(var.task_managed_policies)
@@ -97,15 +103,19 @@ data "aws_iam_policy_document" "ec2_trust" {
 }
 
 resource "aws_iam_role" "instance" {
-  count              = var.enable_instance_iam ? 1 : 0
-  name               = var.instance_role_name
-  assume_role_policy = data.aws_iam_policy_document.ec2_trust[0].json
+  count                 = var.enable_instance_iam ? 1 : 0
+  name                  = var.instance_role_name
+  assume_role_policy    = data.aws_iam_policy_document.ec2_trust[0].json
+  force_detach_policies = true
+  description           = var.instance_role_description
+  tags                  = var.tags
 }
 
 resource "aws_iam_instance_profile" "this" {
   count = var.enable_instance_iam ? 1 : 0
   name  = var.instance_profile_name
   role  = aws_iam_role.instance[0].name
+  tags  = var.tags
 }
 
 locals {
