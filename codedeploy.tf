@@ -21,14 +21,14 @@ resource "aws_iam_role" "codedeploy" {
   tags                  = merge(var.tags, var.codedeploy_role_tags)
 }
 
-resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
+resource "aws_iam_role_policy_attachment" "codedeploy_service" {
   count = var.enable_codedeploy_iam ? 1 : 0
 
   policy_arn = "${local.managed_policy_arn_prefix}/service-role/AWSCodeDeployRole"
   role       = aws_iam_role.codedeploy[0].name
 }
 
-resource "aws_iam_role_policy_attachment" "AWSCodeDeployRoleForECS" {
+resource "aws_iam_role_policy_attachment" "codedeploy_ecs" {
   count = var.enable_codedeploy_iam ? 1 : 0
 
   policy_arn = "${local.managed_policy_arn_prefix}/AWSCodeDeployRoleForECS"
