@@ -34,36 +34,6 @@ variable "execution_role_tags" {
   default     = {}
 }
 
-variable "instance_role_name" {
-  type        = string
-  description = "ECS container instance role name"
-  default     = null
-}
-
-variable "instance_role_description" {
-  type        = string
-  description = "ECS container instance role description"
-  default     = null
-}
-
-variable "instance_role_tags" {
-  type        = map(string)
-  description = "Tags applied to the ECS container instance role"
-  default     = {}
-}
-
-variable "instance_profile_name" {
-  type        = string
-  description = "ECS container instance profile name"
-  default     = null
-}
-
-variable "enable_instance_iam" {
-  type        = bool
-  description = "(Optional) Enable instance IAM?"
-  default     = false
-}
-
 variable "task_managed_policies" {
   type        = list(string)
   description = "Managed Policies to attach to the task role"

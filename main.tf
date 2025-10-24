@@ -38,9 +38,9 @@ data "aws_iam_policy_document" "ssm_messages" {
 */
 resource "aws_iam_role" "execution" {
   name                  = var.execution_role_name
+  description           = var.execution_role_description
   assume_role_policy    = data.aws_iam_policy_document.ecs_tasks_trust.json
   force_detach_policies = true
-  description           = var.execution_role_description
   tags                  = merge(var.tags, var.execution_role_tags)
 }
 
@@ -61,9 +61,9 @@ data "aws_iam_policy_document" "task_trust" {
 
 resource "aws_iam_role" "task" {
   name                  = var.task_role_name
+  description           = var.task_role_description
   assume_role_policy    = data.aws_iam_policy_document.task_trust.json
   force_detach_policies = true
-  description           = var.task_role_description
   tags                  = merge(var.tags, var.task_role_tags)
 }
 
@@ -83,53 +83,5 @@ resource "aws_iam_role_policy" "task_permissions" {
 resource "aws_iam_role_policy_attachment" "task" {
   for_each   = toset(var.task_managed_policies)
   role       = aws_iam_role.task.name
-  policy_arn = each.value
-}
-
-/**
-* ECS container instance role and permissions
-*/
-data "aws_iam_policy_document" "ec2_trust" {
-  count = var.enable_instance_iam ? 1 : 0
-
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.${local.dns_suffix}"]
-    }
-  }
-}
-
-resource "aws_iam_role" "instance" {
-  count                 = var.enable_instance_iam ? 1 : 0
-  name                  = var.instance_role_name
-  assume_role_policy    = data.aws_iam_policy_document.ec2_trust[0].json
-  force_detach_policies = true
-  description           = var.instance_role_description
-  tags                  = merge(var.tags, var.instance_role_tags)
-}
-
-resource "aws_iam_instance_profile" "this" {
-  count = var.enable_instance_iam ? 1 : 0
-  name  = var.instance_profile_name
-  role  = aws_iam_role.instance[0].name
-  tags  = var.tags
-}
-
-locals {
-
-  instance_managed_policies = [
-    "${local.managed_policy_arn_prefix}/AmazonSSMManagedInstanceCore",
-    "${local.managed_policy_arn_prefix}/CloudWatchAgentServerPolicy",
-    "${local.managed_policy_arn_prefix}/service-role/AmazonEC2ContainerServiceforEC2Role"
-  ]
-
-}
-
-resource "aws_iam_role_policy_attachment" "instance" {
-  for_each   = var.enable_instance_iam ? toset(local.instance_managed_policies) : []
-  role       = aws_iam_role.instance[0].name
   policy_arn = each.value
 }
