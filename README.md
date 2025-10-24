@@ -2,8 +2,6 @@
 
 - Task IAM Role
 - Task Execution IAM Role
-- Instance IAM Role
-- Instance Profile
 
 [//]: # (BEGIN_TF_DOCS)
 
